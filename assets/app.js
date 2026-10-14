@@ -899,7 +899,22 @@
       box.className = 'zoom';
       box.setAttribute('role', 'dialog');
       box.setAttribute('aria-label', 'Фото крупно');
-      box.innerHTML = '<img src="' + zoom.getAttribute('href') + '" alt=""><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
+      // самый крупный из файлов, что есть на сайте (в srcset только существующие)
+      var im = $('img', zoom), best = zoom.getAttribute('href'), bw = 0;
+      (im && im.getAttribute('srcset') || '').split(',').forEach(function (part) {
+        var m = part.trim().split(/\s+/), w = parseInt(m[1], 10) || 0;
+        if (m[0] && w > bw) { bw = w; best = m[0]; }
+      });
+      box.innerHTML = '<img src="' + best + '" alt=""><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
+      var pic = $('img', box);
+      pic.addEventListener('load', function () {
+        var nw = pic.naturalWidth, nh = pic.naturalHeight;
+        // длинную плитку на широком экране кладём горизонтально; крупнее ×1,5 натурального не растягиваем
+        var rot = nh / nw > 2.2 && innerWidth > innerHeight;
+        box.classList.toggle('zoom--rot', rot);
+        pic.style.maxWidth = 'min(' + (rot ? 'calc(100vh - 96px)' : 'calc(100vw - 48px)') + ', ' + Math.round(nw * 1.5) + 'px)';
+        pic.style.maxHeight = 'min(' + (rot ? 'calc(100vw - 48px)' : 'calc(100vh - 96px)') + ', ' + Math.round(nh * 1.5) + 'px)';
+      });
       var close = function () { box.remove(); document.removeEventListener('keydown', key); zoom.focus(); };
       var key = function (ev) { if (ev.key === 'Escape') close(); };
       box.addEventListener('click', close);
