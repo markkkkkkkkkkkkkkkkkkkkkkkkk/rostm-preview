@@ -266,11 +266,10 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .mz figcaption { position: absolute; left: 0; bottom: 0; padding: var(--space-1) var(--space-2); font-size: 12px; line-height: 16px; background: var(--ink); opacity: 0; transition: opacity var(--t); }
 .mz figcaption b { font-weight: 600; margin-right: var(--space-1); }
 .mz:hover figcaption, .mz:focus-within figcaption { opacity: 1; }
-.mz--rot figcaption { right: auto; top: 0; writing-mode: vertical-rl; transform: rotate(180deg); white-space: nowrap; padding: var(--space-2) var(--space-1); }
 
 /* направления: без рамок и плашек, разделены воздухом и линией сверху */
-.dirs { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-7); }
-.dir { display: grid; grid-template-rows: auto 1fr; padding-top: var(--space-5); border-top: 1px solid var(--ink); color: var(--ink); }
+.dirs { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 0 var(--space-7); }
+.dir { display: grid; grid-row: span 2; grid-template-rows: subgrid; padding-top: var(--space-5); border-top: 1px solid var(--ink); color: var(--ink); }
 .dir:hover { color: var(--ink); }
 .dir__title { font-family: var(--font-h); font-size: 32px; line-height: 38px; margin-bottom: var(--space-3); }
 .dir__text p { color: var(--ink-2); max-width: 540px; margin-bottom: var(--space-4); }
@@ -278,10 +277,10 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .dir__more b { font-weight: 400; color: var(--faint); margin-left: var(--space-cnt); }
 .dir:hover .dir__more { text-decoration-color: var(--ink); }
 .dir__pic { margin-top: var(--space-5); overflow: hidden; }
-.dir__pic--tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; align-self: end; }
+.dir__pic--tiles { display: grid; grid-template-columns: repeat(6, 1fr); gap: 3px; align-self: start; }
 .dir__pic--tiles span { aspect-ratio: 1; overflow: hidden; background: var(--paper); }
 .dir__pic--tiles img { width: 100%; height: 100%; object-fit: cover; }
-.dir__pic--draw { display: flex; align-items: flex-end; }
+.dir__pic--draw { display: flex; align-items: flex-start; align-self: start; }
 .dir__pic--draw svg { width: 100%; height: auto; max-height: 200px; }
 
 .designs { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--space-4); }
@@ -514,7 +513,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .toolbar__sort { position: relative; display: inline-flex; align-items: center; }
 .toolbar__sort select { appearance: none; -webkit-appearance: none; height: 40px; padding: 0 var(--space-5) 0 0; border: 0; background: transparent; font-size: 14px; font-weight: 600; color: var(--ink); cursor: pointer; }
 .toolbar__sort::after { content: ''; position: absolute; right: var(--space-1); top: 50%; width: 7px; height: 7px; margin-top: calc(-1 * var(--space-cnt)); border-right: 1.5px solid var(--ink); border-bottom: 1.5px solid var(--ink); transform: rotate(45deg); pointer-events: none; }
-.toolbar__sort select:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.toolbar__sort select:focus, .toolbar__sort select:focus-visible { outline: 0; box-shadow: none; }
+.toolbar__sort:focus-within { box-shadow: inset 0 -1px 0 var(--ink); }
 /* вид: две иконки без рамки */
 .view { display: inline-flex; gap: var(--space-1); }
 .view button { width: 32px; height: 32px; display: grid; place-items: center; background: none; border: 0; color: var(--field); transition: color var(--t); }
@@ -784,7 +784,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .hero { padding: var(--space-5) 0 var(--space-8); }
   .hero__in, .facade, .showrooms, .about, .pp, .pp-more { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
   .hero__mosaic { margin-right: calc(-1 * var(--gut)); aspect-ratio: 12 / 7; }
-  .dirs { grid-template-columns: 1fr; }
+  .dirs { grid-template-columns: 1fr; gap: var(--space-7); }
+  .dir { grid-row: auto; grid-template-rows: auto auto; }
   .gallery { grid-template-columns: 1fr 1fr; }
   .gallery figure:last-child { display: none; }
   .info-grid { grid-template-columns: 1fr; }
