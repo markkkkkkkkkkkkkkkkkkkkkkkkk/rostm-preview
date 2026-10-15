@@ -295,7 +295,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .design__n { font-size: 14px; color: var(--muted); }
 
 /* форматы: контуры в одном масштабе, рисуются при появлении, на наведении заполняются фото */
-.formats { --H: 200px; display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--space-4); }
+.formats { --H: 200px; display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--space-4); }   /* сколько форматов есть — столько колонок */
 .fmt { display: flex; flex-direction: column; color: var(--ink); min-width: 0; }
 .fmt__stage { display: flex; align-items: flex-end; justify-content: flex-start; height: calc(var(--H) + var(--space-7)); padding: var(--space-5) 0; margin-bottom: var(--space-3); }
 .fmt__tile { position: relative; display: block; width: calc(var(--w) / 1200 * var(--H)); height: calc(var(--h) / 1200 * var(--H)); }
