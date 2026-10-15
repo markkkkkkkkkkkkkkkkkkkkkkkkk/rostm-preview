@@ -637,15 +637,19 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .pp__main svg { width: 100%; height: 100%; }
 .pp__main--draw { padding: 7%; }
 /* фото плитки: рамка одной высоты у всех товаров, плитка целиком по центру */
-.pp__frame { position: relative; aspect-ratio: 4 / 3; background: #f2f5f7; box-shadow: inset 0 0 0 1px rgba(21, 25, 30, .06); }   /* почти белая холодная подложка: и белая, и тёмная плитка видны */
-.pp__view { position: absolute; inset: var(--space-4); display: flex; align-items: center; justify-content: center; }
-.pp__view[hidden] { display: none; }
-.pp__view img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.pp__frame { position: relative; }
+/* без подложки: фото занимает всю ширину колонки, а у вытянутых — всю доступную высоту; --ar — пропорции файла */
+.pp__view { display: flex; justify-content: center; --pp-h: min(720px, calc(100vh - 180px)); }
+.pp__view img { display: block; width: min(100%, calc(var(--pp-h) * var(--ar, 1))); height: auto; outline: 1px solid rgba(21, 25, 30, .08); outline-offset: -1px; }
 .pp__view[data-zoom] { cursor: zoom-in; }
-.zoom { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; padding: var(--space-5); background: rgba(21, 25, 30, .85); cursor: zoom-out; animation: fade .3s var(--ease); }
-.zoom img { width: auto; height: auto; max-width: calc(100vw - 48px); max-height: calc(100vh - 96px); max-height: calc(100dvh - 96px); object-fit: contain; }   /* целиком в экране, без прокрутки */
+.pp__view:focus { outline: 0; }
+.pp__view:focus-visible img { outline: 2px solid var(--ink); outline-offset: 2px; }
+.zoom { position: fixed; inset: 0; z-index: 90; display: grid; place-items: center; background: rgba(21, 25, 30, .9); cursor: zoom-out; animation: fade .3s var(--ease); }
+.zoom img { display: block; max-width: none; max-height: none; cursor: default; }   /* размер задаёт app.js: вписать в окно, одно правило для всех фото */
 .zoom--rot img { transform: rotate(-90deg); }
-.zoom__x { position: absolute; right: var(--space-3); top: var(--space-3); width: 44px; height: 44px; border: 0; background: none; color: #fff; font-size: 32px; line-height: 1; }
+.zoom__x { position: absolute; right: var(--space-3); top: var(--space-3); width: 44px; height: 44px; border: 0; background: none; color: #fff; cursor: pointer; font-size: 32px; line-height: 1; }
+.zoom__x:focus { outline: 0; }
+.zoom__x:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
 .pp__thumbs { display: flex; gap: var(--space-3); margin-top: var(--space-3); }
 .pp__thumbs button { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-cnt); padding: 0; border: 0; background: none; font-size: 13px; color: var(--muted); cursor: pointer; }
 .pp__thumb { display: block; width: 88px; height: 88px; padding: var(--space-cnt); background: var(--paper); box-shadow: inset 0 0 0 1px transparent; transition: box-shadow var(--t); }
@@ -846,8 +850,6 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .hero__tel { font-size: 20px; }
   .hero__mosaic { display: none; }   /* на телефоне мозаика оказывалась под текстом — не показываем */
   .toolbar__count { order: 6; flex-basis: 100%; }
-  .pp__frame { aspect-ratio: 1 / 1; }
-  .pp__view { inset: var(--space-3); }
   .fam__i figcaption { display: none; }
   .ps-group__head { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) 0; }
   .ps-group__pic { max-width: 160px; padding: 0; }

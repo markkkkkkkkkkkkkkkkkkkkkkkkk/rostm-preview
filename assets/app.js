@@ -900,9 +900,11 @@
     var zoom = $('[data-zoom]', root);
     if (zoom) zoom.addEventListener('click', function (e) {
       e.preventDefault();
+      var byKey = e.detail === 0;                        // открыто с клавиатуры — тогда и фокус показываем
       var box = document.createElement('div');
       box.className = 'zoom';
       box.setAttribute('role', 'dialog');
+      box.setAttribute('aria-modal', 'true');
       box.setAttribute('aria-label', 'Фото крупно');
       // самый крупный из файлов, что есть на сайте (в srcset только существующие)
       var im = $('img', zoom), best = zoom.getAttribute('href'), bw = 0;
@@ -910,22 +912,41 @@
         var m = part.trim().split(/\s+/), w = parseInt(m[1], 10) || 0;
         if (m[0] && w > bw) { bw = w; best = m[0]; }
       });
-      box.innerHTML = '<img src="' + best + '" alt=""><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
-      var pic = $('img', box);
-      pic.addEventListener('load', function () {
+      box.innerHTML = '<img src="' + best + '" alt="' + (im ? im.alt.replace(/"/g, '&quot;') : '') + '"><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
+      var pic = $('img', box), btn = $('button', box);
+      // одно правило для всех фото: вписать целиком в окно (поля 24 px по бокам, 64 px сверху и снизу под кнопку ×),
+      // независимо от разрешения файла; длинную плитку на широком экране кладём горизонтально
+      var fit = function () {
         var nw = pic.naturalWidth, nh = pic.naturalHeight;
-        // длинную плитку на широком экране кладём горизонтально; крупнее ×1,5 натурального не растягиваем
-        var rot = nh / nw > 2.2 && innerWidth > innerHeight;
+        if (!nw || !nh) return;
+        var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+        var rot = nh / nw > 2.2 && vw > vh;
+        var aw = vw - (vw < 640 ? 32 : 48), ah = vh - 128, w = rot ? nh : nw, h = rot ? nw : nh, k = Math.min(aw / w, ah / h);
         box.classList.toggle('zoom--rot', rot);
-        pic.style.maxWidth = 'min(' + (rot ? 'calc(100vh - 96px)' : 'calc(100vw - 48px)') + ', ' + Math.round(nw * 1.5) + 'px)';
-        pic.style.maxHeight = 'min(' + (rot ? 'calc(100vw - 48px)' : 'calc(100vh - 96px)') + ', ' + Math.round(nh * 1.5) + 'px)';
-      });
-      var close = function () { box.remove(); document.removeEventListener('keydown', key); zoom.focus(); };
-      var key = function (ev) { if (ev.key === 'Escape') close(); };
-      box.addEventListener('click', close);
+        pic.style.width = Math.round(nw * k) + 'px';
+        pic.style.height = Math.round(nh * k) + 'px';
+      };
+      pic.addEventListener('load', fit);
+      window.addEventListener('resize', fit);
+      var html = document.documentElement, padR = html.style.paddingRight, ovf = html.style.overflow;
+      var sbw = window.innerWidth - html.clientWidth;    // фон не прокручивается и не сдвигается
+      html.style.overflow = 'hidden';
+      if (sbw > 0) html.style.paddingRight = sbw + 'px';
+      var close = function (viaKey) {
+        box.remove();
+        document.removeEventListener('keydown', key);
+        window.removeEventListener('resize', fit);
+        html.style.overflow = ovf; html.style.paddingRight = padR;
+        try { zoom.focus({ preventScroll: true, focusVisible: !!viaKey }); } catch (er) { zoom.focus(); }
+      };
+      var key = function (ev) {
+        if (ev.key === 'Escape') { ev.preventDefault(); close(true); }
+        else if (ev.key === 'Tab') { ev.preventDefault(); btn.focus(); }   // в окне одна кнопка
+      };
+      box.addEventListener('click', function (ev) { if (ev.target !== pic) close(ev.detail === 0); });
       document.addEventListener('keydown', key);
       document.body.appendChild(box);
-      $('button', box).focus();
+      try { btn.focus({ focusVisible: byKey }); } catch (er) { btn.focus(); }
     });
   }
 
