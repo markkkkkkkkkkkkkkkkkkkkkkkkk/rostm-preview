@@ -894,7 +894,9 @@
         var msg = 'Расчёт: ' + numRu(last.a) + ' м²' + (last.r ? ' (+' + last.r + '% запас)' : ' (без запаса)') + ', нужно ' +
           last.boxes + ' ' + plural(last.boxes, 'коробка', 'коробки', 'коробок') + ', ' + numRu(last.m2) + ' м²' +
           (last.pcs ? ', ' + last.pcs + ' шт.' : '') + '. ' + root.dataset.name;
-        openCallback({ id: root.dataset.product, name: root.dataset.name, url: location.pathname, msg: msg, topic: 'Узнать цену: ' + root.dataset.name });
+        var pim = $('.pp__view img, .pp__main img', root);
+        openCallback({ id: root.dataset.product, name: root.dataset.name, url: location.pathname, img: pim ? pim.currentSrc || pim.src : '',
+          msg: msg, topic: 'Узнать цену: ' + root.dataset.name });
       });
     }
     var zoom = $('[data-zoom]', root);
@@ -1058,7 +1060,7 @@
       } else if (pp) {
         c.name = pp.dataset.name;
         c.url = location.pathname;
-        var pim = $('.pp__main img', pp);
+        var pim = $('.pp__view img, .pp__main img', pp);
         c.img = pim ? pim.currentSrc || pim.src : '';
       }
       c.name = c.name || id;
@@ -1150,11 +1152,6 @@
 
   /* ---------- прочее ---------- */
   function initMisc() {
-    var ck = $('[data-cookie]');
-    if (ck && ls.get('rm-cookie') !== '1') {
-      ck.hidden = false;
-      $('[data-cookie-ok]', ck).addEventListener('click', function () { ls.set('rm-cookie', '1'); ck.hidden = true; });
-    }
     var cp = $('[data-copy-req]');
     if (cp) cp.addEventListener('click', function () {
       var src = document.getElementById(cp.getAttribute('aria-controls') || 'req') || cp.closest('section');

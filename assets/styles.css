@@ -160,6 +160,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .search input { flex: 1; min-width: 0; height: 40px; padding: 0 var(--space-1) 0 0; border: 0; border-bottom: 1px solid var(--field); border-radius: 0; background: transparent; font-size: 15px; transition: border-color var(--t); }
 .search input:focus { outline: 0; border-bottom-color: var(--ink); }
 .search input::placeholder { color: var(--faint); }
+@media (max-width: 359px) { .search input::placeholder { font-size: 13px; } }   /* подсказка целиком на самых узких телефонах; шрифт ввода не меняем */
+@media (pointer: coarse) { .link-more { padding: 6px 0; margin: -6px 0; } }
 .search input::-webkit-search-cancel-button { display: none; }
 .search__go { width: 40px; height: 40px; border: 0; border-bottom: 1px solid var(--field); background: transparent; color: var(--ink); display: grid; place-items: center; transition: color var(--t), border-color var(--t); }
 .search:focus-within .search__go { border-bottom-color: var(--ink); }
@@ -401,9 +403,6 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .ftr__legal a { color: rgba(255, 255, 255, .8); text-decoration: underline; text-underline-offset: 3px; }
 
 .mbar { display: none; }
-.cookie { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: var(--bg) var(--bg-tex) repeat 0 0 / 1024px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
-.cookie__in { display: flex; align-items: center; justify-content: space-between; gap: var(--space-4); padding-top: var(--space-2); padding-bottom: var(--space-2); }
-.cookie p { margin: 0; }
 
 /* ---------- внутренние страницы ---------- */
 .crumbs { display: flex; flex-wrap: wrap; gap: var(--space-cnt); padding: var(--space-5) 0 0; font-size: 13px; line-height: 16px; color: var(--muted); }
@@ -830,7 +829,6 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .mbar__call small { color: rgba(255, 255, 255, .7); }
   .mbar__cb { border: 0; background: var(--navy); color: #fff; }
   body { padding-bottom: 66px; }   /* высота нижней панели звонка */
-  .cookie { bottom: calc(62px + env(safe-area-inset-bottom)); }   /* над нижней панелью */
   .cards--list .card { grid-template-columns: 56px minmax(0, 1fr) auto; }
   .cards--list .card__pic { width: 56px; height: 56px; }
   .cards--list .card__spec { grid-column: 2; grid-row: auto; }
@@ -887,7 +885,6 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .ps-tbl td:last-child { grid-column: 2; grid-row: 1 / span 5; align-self: center; }
   .cb { padding: var(--space-5) var(--space-4); }
   .cb__title { font-size: 28px; line-height: 32px; }
-  .cookie__in { flex-direction: row; font-size: 12px; }
   .pp__key { grid-template-columns: 1fr 1fr; }
   .view { display: none; }
   .qa, .qa thead, .qa tbody, .qa tr, .qa td { display: block; width: auto !important; }
