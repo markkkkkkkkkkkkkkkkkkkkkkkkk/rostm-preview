@@ -861,7 +861,7 @@
       var box = parseFloat(calc.dataset.box), pcs = parseFloat(calc.dataset.pcs) || 0, pallet = parseFloat(calc.dataset.pallet) || 0;
       var last = null;
       var run = function () {
-        var a = parseFloat(String(area.value).replace(',', '.'));
+        var a = parseFloat(String(area.value).replace(/\s/g, '').replace(',', '.'));
         if (!(a > 0)) {
           out.textContent = 'Введите площадь больше нуля';
           out.classList.add('is-err');
@@ -875,7 +875,12 @@
         var boxes = Math.ceil(need / box - 1e-9), m2 = boxes * box;
         var s = boxes + ' ' + plural(boxes, 'коробка', 'коробки', 'коробок') + ' = ' + numRu(m2) + ' м²';
         if (pcs) s += ', ' + (boxes * pcs) + ' шт.';
-        if (pallet && boxes * box >= pallet) s += ' Это ' + numRu(m2 / pallet, 1) + ' ' + 'паллеты — уточним, как удобнее отгрузить.';
+        // pallet — коробок на паллете: от одной полной паллеты подсказываем, сколько это паллет
+        if (pallet && boxes >= pallet) {
+          var pl = boxes / pallet;
+          s += (s.slice(-1) === '.' ? ' ' : '. ') + 'Это ' + (pl % 1 ? 'около ' + numRu(pl, 1) + ' паллеты' : pl + ' ' + plural(pl, 'паллета', 'паллеты', 'паллет')) +
+            ' — уточним, как удобнее отгрузить.';
+        }
         out.textContent = s;
         last = { a: a, r: r, boxes: boxes, m2: m2, pcs: pcs ? boxes * pcs : 0 };
       };

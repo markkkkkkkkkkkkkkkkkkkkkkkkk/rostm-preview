@@ -31,7 +31,7 @@
   --paper: #e6ebee;
   --paper-2: #dae1e5;
   --bg: #d2dade;               /* фон сайта: светлый серо-голубой бетон (#D5DDE0…#CDD6DA) */
-  --bg-tex: url(bg-concrete2.webp?v=5);   /* фото-текстура архитектурного бетона (ambientCG, CC0), перекрашена, бесшовная */
+  --bg-tex: url(bg-concrete2.webp?v=6);   /* фото-текстура архитектурного бетона (ambientCG, CC0), перекрашена, бесшовная */
   --seam: #d8d6d0;
   --white: #fff;
   --navy: #172f4c;
@@ -129,7 +129,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 /* ---------- шапка: высота зарезервирована, при прокрутке вниз — компактная (только основная строка, 64 px) ---------- */
 .hdr-shell { height: var(--hdr-full); }
 .hdr { position: fixed; top: 0; left: 0; right: 0; z-index: 30; transition: transform .4s var(--ease); }
-.hdr-top, .hdr-main, .hdr-nav { background: var(--bg) var(--bg-tex) repeat 0 0 / 1024px; }
+.hdr-top, .hdr-main, .hdr-nav { background: linear-gradient(rgba(255, 255, 255, .42), rgba(255, 255, 255, .42)), var(--bg) var(--bg-tex) repeat 0 0 / 1024px; }   /* ровная вуаль (не градиент), шапка светлее фона */
 .hdr-main { border-bottom: 1px solid var(--line-2); }
 .hdr.is-compact { transform: translateY(calc(-1 * var(--hdr-top))); }
 .hdr-nav { transition: opacity .35s var(--ease), transform .4s var(--ease); }
@@ -554,6 +554,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .card { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
 .card__pic { position: relative; display: block; aspect-ratio: 1 / 1; background: var(--paper); overflow: hidden; margin-bottom: var(--space-2); }
 .card__pic img, .card__pic svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+.card__pic img, .design__pic img, .dir__pic--tiles img, .mz img, .showrooms__pics img { outline: 1px solid rgba(21, 25, 30, .08); outline-offset: -1px; }   /* светлая плитка не сливается с бетоном */
 .card__pic .iso { padding: 12%; }
 .card__flag { position: absolute; left: var(--space-2); top: var(--space-2); padding: var(--space-1) var(--space-2); background: var(--ink); font-size: 12px; font-weight: 600; line-height: 16px; color: #fff; }
 .card__flag--new { background: var(--navy); }
@@ -635,8 +636,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .pp__main svg { width: 100%; height: 100%; }
 .pp__main--draw { padding: 7%; }
 /* фото плитки: рамка одной высоты у всех товаров, плитка целиком по центру */
-.pp__frame { position: relative; aspect-ratio: 4 / 3; background: var(--paper); }
-.pp__view { position: absolute; inset: var(--space-5); display: flex; align-items: center; justify-content: center; }
+.pp__frame { position: relative; aspect-ratio: 4 / 3; background: #f2f5f7; box-shadow: inset 0 0 0 1px rgba(21, 25, 30, .06); }   /* почти белая холодная подложка: и белая, и тёмная плитка видны */
+.pp__view { position: absolute; inset: var(--space-4); display: flex; align-items: center; justify-content: center; }
 .pp__view[hidden] { display: none; }
 .pp__view img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .pp__view[data-zoom] { cursor: zoom-in; }
@@ -832,7 +833,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 }
 
 @media (max-width: 640px) {
-  :root { --bg-tex: url(bg-concrete2-m.webp?v=5); --gut: 16px; --space-section: 56px; }
+  :root { --bg-tex: url(bg-concrete2-m.webp?v=6); --gut: 16px; --space-section: 56px; }
   h1, .hero__title { font-size: 40px; }
   .pp__title { font-size: 32px; line-height: 36px; }
   .sec__title { font-size: 28px; line-height: 34px; }
@@ -845,7 +846,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .hero__mosaic { display: none; }   /* на телефоне мозаика оказывалась под текстом — не показываем */
   .toolbar__count { order: 6; flex-basis: 100%; }
   .pp__frame { aspect-ratio: 1 / 1; }
-  .pp__view { inset: var(--space-4); }
+  .pp__view { inset: var(--space-3); }
   .fam__i figcaption { display: none; }
   .ps-group__head { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) 0; }
   .ps-group__pic { max-width: 160px; padding: 0; }
