@@ -23,14 +23,14 @@
 :root {
   --ink: #15191e;
   --ink-2: #353c44;
-  --muted: #4c555e;
-  --faint: #57606a;
-  --line: #b3bdc7;
-  --line-2: #c5ced6;
+  --muted: #3c444c;
+  --faint: #47505a;
+  --line: rgba(21, 25, 30, .24);
+  --line-2: rgba(21, 25, 30, .14);
   --field: #8f969d;
-  --paper: #e4e9ee;
-  --paper-2: #d7dee5;
-  --bg: #cfd7df;               /* фон сайта: светлый серо-голубой, как оцинкованный профиль */
+  --paper: #dfe5ea;
+  --paper-2: #d0d8df;
+  --bg: #b2bec7;               /* фон сайта: светлый серо-голубой, как оцинкованный профиль */
   --bg-tex: url(bg-concrete.webp);   /* фактура «лофт-бетон», бесшовная */
   --seam: #d8d6d0;
   --white: #fff;
