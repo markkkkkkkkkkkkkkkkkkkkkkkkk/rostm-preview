@@ -106,10 +106,11 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 }
 .btn--blue { background: var(--navy); color: #fff; }   /* основные кнопки — в цвет «Каталога» */
 .btn--blue:hover { background: #0f2238; color: #fff; }
-.btn--dark { background: var(--ink); color: #fff; }
-.btn--dark:hover { background: #2a3139; color: #fff; }
-.btn--line { background: transparent; border-color: var(--ink); color: var(--ink); }
-.btn--line:hover { background: var(--ink); color: #fff; }
+.btn--dark { background: var(--navy); color: #fff; }
+.btn--dark:hover { background: #0f2238; color: #fff; }
+/* все кнопки — в цвет «Каталога»; при наведении темнеют на тон */
+.btn--line { background: var(--navy); border-color: var(--navy); color: #fff; }
+.btn--line:hover { background: #0f2238; border-color: #0f2238; color: #fff; }
 .btn--s { min-height: 40px; padding: 0 var(--space-4); font-size: 14px; }
 .btn--wide { width: 100%; }
 .btn[disabled], .btn[aria-busy=true] { opacity: .7; cursor: progress; }
@@ -214,7 +215,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .seg { display: inline-flex; border: 1px solid var(--ink); border-radius: var(--r); }
 .seg button { padding: var(--space-2) var(--space-3); background: var(--white); border: 0; font-size: 14px; font-weight: 600; color: var(--ink); }
 .seg button + button { border-left: 1px solid var(--ink); }
-.seg button[aria-checked=true] { background: var(--ink); color: #fff; }
+.seg button[aria-checked=true] { background: var(--navy); color: #fff; }
 .drawer__nav a { display: block; padding: var(--space-3) 0; border-bottom: 1px solid var(--line-2); color: var(--ink); font-size: 17px; font-weight: 600; }
 .drawer__nav .drawer__sub { padding-left: var(--space-4); font-weight: 400; font-size: 16px; color: var(--ink-2); }
 .drawer__contacts { margin-top: var(--space-5); font-size: 15px; display: flex; flex-direction: column; }
@@ -594,7 +595,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .chipbox input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .chipbox span { display: inline-flex; align-items: center; height: 32px; padding: 0 var(--space-3); background: var(--paper); border-radius: var(--r); font-size: 14px; cursor: pointer; transition: background-color var(--t), color var(--t); }
 .chipbox span:hover { background: var(--paper-2); }
-.chipbox input:checked + span { background: var(--ink); color: #fff; }
+.chipbox input:checked + span { background: var(--navy); color: #fff; }
 .chipbox input:disabled + span { color: #a3a8ad; background: transparent; cursor: default; box-shadow: inset 0 0 0 1px var(--line-2); }
 .chipbox input:focus-visible + span { outline: 2px solid var(--blue); outline-offset: 2px; }
 .ps-list { display: block; }
@@ -816,7 +817,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .mbar a, .mbar button { display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2); min-height: 46px; border-radius: var(--r); font-weight: 600; font-size: 15px; }
   .mbar small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); line-height: 1; }
   .mbar__call span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
-  .mbar__call { border: 1px solid var(--ink); color: var(--ink); }
+  .mbar__call { border: 0; background: var(--navy); color: #fff; }
+  .mbar__call small { color: rgba(255, 255, 255, .7); }
   .mbar__cb { border: 0; background: var(--navy); color: #fff; }
   body { padding-bottom: 66px; }   /* высота нижней панели звонка */
   .cookie { bottom: calc(62px + env(safe-area-inset-bottom)); }   /* над нижней панелью */
