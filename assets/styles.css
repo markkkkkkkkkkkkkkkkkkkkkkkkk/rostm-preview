@@ -104,8 +104,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   font-weight: 600; font-size: 15px; line-height: 20px; text-align: center; white-space: nowrap;
   transition: background-color var(--t), border-color var(--t), color var(--t);
 }
-.btn--blue { background: var(--blue); color: #fff; }
-.btn--blue:hover { background: var(--blue-d); color: #fff; }
+.btn--blue { background: var(--navy); color: #fff; }   /* основные кнопки — в цвет «Каталога» */
+.btn--blue:hover { background: #0f2238; color: #fff; }
 .btn--dark { background: var(--ink); color: #fff; }
 .btn--dark:hover { background: #2a3139; color: #fff; }
 .btn--line { background: transparent; border-color: var(--ink); color: var(--ink); }
@@ -236,6 +236,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .sec__foot { margin-top: var(--space-5); }
 .sec-in { margin: var(--space-7) 0 0; }
 /* разделитель секций: линия 1 px и короткая подпись слева */
+.group-title { font-family: var(--font-h); font-size: 40px; line-height: 44px; margin: 0 0 var(--space-6); padding-top: var(--space-5); border-top: 2px solid var(--ink); }
 .rule { display: flex; align-items: center; gap: var(--space-3); margin: 0 0 var(--space-6); font-size: 13px; line-height: 16px; color: var(--muted); }
 .rule::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .h2 { font-size: 24px; line-height: 30px; margin-bottom: var(--space-4); }
@@ -816,7 +817,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .mbar small { display: block; font-weight: 400; font-size: 11px; color: var(--muted); line-height: 1; }
   .mbar__call span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
   .mbar__call { border: 1px solid var(--ink); color: var(--ink); }
-  .mbar__cb { border: 0; background: var(--blue); color: #fff; }
+  .mbar__cb { border: 0; background: var(--navy); color: #fff; }
   body { padding-bottom: 66px; }   /* высота нижней панели звонка */
   .cookie { bottom: calc(62px + env(safe-area-inset-bottom)); }   /* над нижней панелью */
   .cards--list .card { grid-template-columns: 56px minmax(0, 1fr) auto; }
@@ -830,6 +831,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   h1, .hero__title { font-size: 40px; }
   .pp__title { font-size: 32px; line-height: 36px; }
   .sec__title { font-size: 28px; line-height: 34px; }
+  .group-title { font-size: 32px; line-height: 36px; }
   .sec--air { padding: var(--space-8) 0; }
   .hero { padding-bottom: var(--space-7); }
   .hero__lead { font-size: 16px; line-height: 24px; margin-bottom: var(--space-5); }

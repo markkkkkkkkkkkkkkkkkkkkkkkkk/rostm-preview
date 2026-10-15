@@ -149,8 +149,8 @@
     ['идальго', 'idalgo'], ['грасаро', 'grasaro'], ['гранитея', 'granitea'], ['граниtea', 'granitea'],
     ['винчи', 'vinchi'], ['силк стоун', 'silk stone'], ['степпе', 'steppe'], ['степпе', 'steppe'],
     ['ван шенг', 'wan sheng'], ['ваншенг', 'wan sheng'], ['зерде', 'zerde'], ['прайм', 'prime'],
-    ['lb ceramics', 'ласселсбергер'], ['lb', 'ласселсбергер'], ['лб', 'ласселсбергер'], ['lasselsberger', 'ласселсбергер'],
-    ['ласельсбергер', 'ласселсбергер'], ['uralgres', 'уралгрес'], ['таганай', 'грани таганая'], ['ural', 'уралгрес']
+    ['ласселсбергер', 'lb ceramics'], ['lb', 'lb ceramics'], ['лб', 'lb ceramics'], ['lasselsberger', 'lb ceramics'],
+    ['ласельсбергер', 'lb ceramics'], ['uralgres', 'уралгрес'], ['таганай', 'грани таганая'], ['ural', 'уралгрес']
   ];
   function norm(s) {
     s = ' ' + String(s || '').toLowerCase().replace(/ё/g, 'е') + ' ';
