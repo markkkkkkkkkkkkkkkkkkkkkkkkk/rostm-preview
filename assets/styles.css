@@ -639,7 +639,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .pp__frame { position: relative; }
 /* без подложки: фото занимает всю ширину колонки, а у вытянутых — всю доступную высоту; --ar — пропорции файла */
 .pp__view { display: flex; justify-content: center; --pp-h: min(720px, calc(100vh - 180px)); }
-.pp__view img { display: block; width: min(100%, calc(var(--pp-h) * var(--ar, 1))); height: auto; outline: 1px solid rgba(21, 25, 30, .08); outline-offset: -1px; }
+.pp__view img { display: block; width: min(100%, calc(var(--pp-h) * var(--ar, 1))); height: auto; }
 .pp__view[data-zoom] { cursor: zoom-in; }
 .pp__view:focus { outline: 0; }
 .pp__view:focus-visible img { outline: 2px solid var(--ink); outline-offset: 2px; }
