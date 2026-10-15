@@ -855,15 +855,18 @@
 
   /* ---------- карточка товара ---------- */
   function initProduct(root) {
+    var mcb = $('.mbar__cb');
+    if (mcb && root.dataset.product) { mcb.textContent = 'Узнать цену'; mcb.setAttribute('data-cb-id', root.dataset.product); }
     var calc = $('[data-calc]', root);
     if (calc) {
-      var area = $('[data-calc-area]', calc), res = $('[data-calc-reserve]', calc), out = $('[data-calc-out]', calc);
+      var area = $('[data-calc-area]', calc), res = $('[data-calc-reserve]', calc), out = $('[data-calc-out]', calc), note = $('[data-calc-note]', calc);
       var box = parseFloat(calc.dataset.box), pcs = parseFloat(calc.dataset.pcs) || 0, pallet = parseFloat(calc.dataset.pallet) || 0;
       var last = null;
       var run = function () {
         var a = parseFloat(String(area.value).replace(/\s/g, '').replace(',', '.'));
         if (!(a > 0)) {
           out.textContent = 'Введите площадь больше нуля';
+          if (note) note.textContent = '';
           out.classList.add('is-err');
           area.setAttribute('aria-invalid', 'true');
           last = null;
@@ -873,8 +876,9 @@
         area.removeAttribute('aria-invalid');
         var r = parseFloat(res.value) || 0, need = a * (1 + r / 100);
         var boxes = Math.ceil(need / box - 1e-9), m2 = boxes * box;
-        var s = boxes + ' ' + plural(boxes, 'коробка', 'коробки', 'коробок') + ' = ' + numRu(m2) + ' м²';
-        if (pcs) s += ', ' + (boxes * pcs) + ' шт.';
+        // «Для 20 м² с запасом 10% — 14 коробок, всего 22,68 м², 112 шт.»
+        var s = 'Для ' + numRu(a) + ' м² ' + (r ? 'с запасом ' + r + '%' : 'без запаса') + ' — ' +
+          boxes + ' ' + plural(boxes, 'коробка', 'коробки', 'коробок') + ', всего ' + numRu(m2) + ' м²' + (pcs ? ', ' + (boxes * pcs) + ' шт.' : '.');
         // pallet — коробок на паллете: от одной полной паллеты подсказываем, сколько это паллет
         if (pallet && boxes >= pallet) {
           var pl = boxes / pallet;
@@ -882,6 +886,7 @@
             ' — уточним, как удобнее отгрузить.';
         }
         out.textContent = s;
+        if (note) note.textContent = 'Считаем целыми коробками: количество округлено вверх' + (r ? ', запас ' + r + '% уже учтён.' : '.');
         last = { a: a, r: r, boxes: boxes, m2: m2, pcs: pcs ? boxes * pcs : 0 };
       };
       area.addEventListener('input', run);
@@ -899,7 +904,10 @@
           msg: msg, topic: 'Узнать цену: ' + root.dataset.name });
       });
     }
-    var zoom = $('[data-zoom]', root);
+    var zoom = $('[data-zoom]', root), zoomBtn = $('[data-zoom-open]', root);
+    if (zoom && zoomBtn) zoomBtn.addEventListener('click', function (e) {
+      zoom.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true, detail: e.detail }));
+    });
     if (zoom) zoom.addEventListener('click', function (e) {
       e.preventDefault();
       var byKey = e.detail === 0;                        // открыто с клавиатуры — тогда и фокус показываем
@@ -915,7 +923,7 @@
         if (m[0] && w > bw) { bw = w; best = m[0]; }
       });
       box.innerHTML = '<img src="' + best + '" alt="' + (im ? im.alt.replace(/"/g, '&quot;') : '') + '"><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
-      var pic = $('img', box), btn = $('button', box);
+      var pic = $('img', box), btn = $('button', box), detail = false, kFit = 1, kDet = 1;
       // одно правило для всех фото: вписать целиком в окно (поля 24 px по бокам, 64 px сверху и снизу под кнопку ×),
       // независимо от разрешения файла; длинную плитку на широком экране кладём горизонтально
       var fit = function () {
@@ -924,10 +932,30 @@
         var vw = document.documentElement.clientWidth, vh = window.innerHeight;
         var rot = nh / nw > 2.2 && vw > vh;
         var aw = vw - (vw < 640 ? 32 : 48), ah = vh - 128, w = rot ? nh : nw, h = rot ? nw : nh, k = Math.min(aw / w, ah / h);
+        // приближение: до натурального размера файла, но не меньше ×2 и не больше ×3 от вписанного; повёрнутое не приближаем
+        kFit = k; kDet = rot ? k : Math.min(Math.max(1, 2 * k), 3 * k);
+        if (kDet < k * 1.25) detail = false;
+        box.classList.toggle('can-zoom', kDet >= k * 1.25);
+        if (hint) hint.hidden = !(kDet >= k * 1.25) || detail;
         box.classList.toggle('zoom--rot', rot);
-        pic.style.width = Math.round(nw * k) + 'px';
-        pic.style.height = Math.round(nh * k) + 'px';
+        box.classList.toggle('zoom--detail', detail);
+        var kk = detail ? kDet : k, pw = Math.round(nw * kk), ph = Math.round(nh * kk);
+        pic.style.width = pw + 'px';
+        pic.style.height = ph + 'px';
+        pic.style.margin = detail ? Math.max(0, Math.round((vh - ph) / 2)) + 'px ' + Math.max(0, Math.round((vw - pw) / 2)) + 'px' : '';
       };
+      var hint = document.createElement('p');
+      hint.className = 'zoom__hint'; hint.hidden = true; hint.textContent = 'Нажмите на фото, чтобы приблизить';
+      box.appendChild(hint);
+      pic.addEventListener('click', function (ev) {
+        if (!box.classList.contains('can-zoom')) return;
+        var r = pic.getBoundingClientRect(), rx = (ev.clientX - r.left) / r.width, ry = (ev.clientY - r.top) / r.height;
+        detail = !detail; fit();
+        if (detail) {                                    // точка под пальцем остаётся на месте
+          box.scrollLeft = rx * pic.offsetWidth + parseFloat(pic.style.marginLeft || 0) - ev.clientX;
+          box.scrollTop = ry * pic.offsetHeight + parseFloat(pic.style.marginTop || 0) - ev.clientY;
+        }
+      });
       pic.addEventListener('load', fit);
       window.addEventListener('resize', fit);
       var html = document.documentElement, padR = html.style.paddingRight, ovf = html.style.overflow;
@@ -945,7 +973,11 @@
         if (ev.key === 'Escape') { ev.preventDefault(); close(true); }
         else if (ev.key === 'Tab') { ev.preventDefault(); btn.focus(); }   // в окне одна кнопка
       };
-      box.addEventListener('click', function (ev) { if (ev.target !== pic) close(ev.detail === 0); });
+      box.addEventListener('click', function (ev) {
+        if (ev.target === pic || ev.target === hint) return;
+        if (detail && ev.target === box) { detail = false; fit(); return; }   // мимо приближенного фото — обратно к целому
+        close(ev.detail === 0);
+      });
       document.addEventListener('keydown', key);
       document.body.appendChild(box);
       try { btn.focus({ focusVisible: byKey }); } catch (er) { btn.focus(); }
@@ -1014,7 +1046,12 @@
     var body = $('[data-cb-body]', dlg), done = $('[data-cb-done]', dlg), box = $('[data-cb-product]', dlg);
     body.hidden = false; done.hidden = true;
     $('[data-cb-fail]', dlg).hidden = true;
-    var title = $('#cb-title', dlg);
+    var title = $('#cb-title', dlg), lead = $('[data-cb-lead]', dlg), more = $('[data-cb-more]', dlg);
+    if (lead) {
+      lead.dataset.base = lead.dataset.base || lead.textContent;
+      lead.textContent = ctx.id ? 'Товар уже указан в заявке — оставьте имя и телефон. Менеджер перезвонит и назовёт цену в течение рабочего дня.' : lead.dataset.base;
+    }
+    if (more) more.open = !!(ctx.msg || $('[data-cb-msg]', dlg).value.trim());   // дополнительные поля — свёрнуты, если не нужны
     if (ctx.id) {
       title.textContent = 'Узнать цену';
       box.hidden = false;
@@ -1045,7 +1082,7 @@
     var id = btn.getAttribute('data-cb-id'), topic = btn.getAttribute('data-cb-topic');
     if (id) {
       var c = { id: id };
-      var cardEl = btn.closest('.card'), row = btn.closest('tr'), pp = btn.closest('[data-product]');
+      var cardEl = btn.closest('.card'), row = btn.closest('tr'), pp = btn.closest('[data-product]') || $('[data-product="' + id + '"]');
       if (cardEl) {
         var nm = $('.card__name', cardEl), top = $('.card__sku', cardEl), sp = $('.card__spec', cardEl), im = $('img', cardEl);
         var topT = top ? top.textContent.trim() : '';
