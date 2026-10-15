@@ -370,6 +370,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .cb__lead { color: var(--muted); margin-bottom: var(--space-5); font-size: 15px; }
 .cb__product { display: grid; grid-template-columns: 52px 1fr; gap: var(--space-3); align-items: center; padding: var(--space-3) 0; margin-bottom: var(--space-4); border-top: 1px solid var(--line-2); border-bottom: 1px solid var(--line-2); font-size: 14px; line-height: 20px; }
 .cb__product .sg-pic { width: 52px; height: 52px; }
+.cb__product--text { grid-template-columns: 1fr; }
 .cb__product small { display: block; color: var(--muted); font-size: 12px; }
 .cb__fail { padding: var(--space-3); margin: 0 0 var(--space-4); background: #fdecea; color: #7a1a12; font-size: 14px; }
 .cb__fail a { color: #7a1a12; font-weight: 600; text-decoration: underline; }
@@ -833,7 +834,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .hero__lead { font-size: 16px; line-height: 24px; margin-bottom: var(--space-5); }
   .hero__actions { margin-bottom: var(--space-5); flex-direction: column; align-items: flex-start; }
   .hero__tel { font-size: 20px; }
-  .hero__mosaic { aspect-ratio: 12 / 8; }
+  .hero__mosaic { display: none; }   /* на телефоне мозаика оказывалась под текстом — не показываем */
+  .toolbar__count { order: 6; flex-basis: 100%; }
   .pp__frame { aspect-ratio: 1 / 1; }
   .pp__view { inset: var(--space-4); }
   .fam__i figcaption { display: none; }

@@ -20,7 +20,7 @@
   function loadScriptData(file, key) {
     return new Promise(function (ok, fail) {
       var sc = document.createElement('script');
-      sc.src = ROOT + file;
+      sc.src = ROOT + file + '?v=' + (document.documentElement.dataset.v || '');   // новая версия — без старого кэша
       sc.onload = function () { ok((window.RM_DATA || {})[key]); };
       sc.onerror = fail;
       document.head.appendChild(sc);
@@ -990,12 +990,14 @@
     if (ctx.id) {
       title.textContent = 'Узнать цену';
       box.hidden = false;
-      box.innerHTML = '<span class="sg-pic">' + (ctx.img ? '<img src="' + esc(ctx.img) + '" alt="" width="52" height="52">' : '') +
-        '</span><span>' + esc(ctx.name) + (ctx.sub ? '<small>' + esc(ctx.sub) + '</small>' : '') + '</span>';
+      box.classList.toggle('cb__product--text', !ctx.img);       // подсистема: без картинки
+      box.innerHTML = (ctx.img ? '<span class="sg-pic"><img src="' + esc(ctx.img) + '" alt="" width="52" height="52"></span>' : '') +
+        '<span>' + esc(ctx.name) + (ctx.sub ? '<small>' + esc(ctx.sub) + '</small>' : '') + '</span>';
     } else if (ctx.topic) {
       title.textContent = /^Посчитать/.test(ctx.topic) ? 'Посчитать фасад' : /^(Найдите|Поиск)/.test(ctx.topic) ? 'Найдём позицию' : 'Заказать звонок';
       box.hidden = false;
-      box.innerHTML = '<span class="sg-pic"></span><span>' + esc(ctx.topic) + '</span>';
+      box.classList.add('cb__product--text');
+      box.innerHTML = '<span>' + esc(ctx.topic) + '</span>';
     } else {
       title.textContent = 'Заказать звонок';
       box.hidden = true;
