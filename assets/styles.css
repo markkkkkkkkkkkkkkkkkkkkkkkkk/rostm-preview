@@ -173,7 +173,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .sg-t small { display: block; color: var(--muted); font-size: 12px; }
 .sg-f { font-size: 12px; color: var(--muted); }
 .suggest .sg-all { display: block; padding: var(--space-3); font-weight: 600; color: var(--ink); border: 0; text-decoration: underline; text-decoration-color: var(--line); text-underline-offset: 4px; }
-.sg-none { padding: var(--space-3); font-size: 14px; color: var(--muted); }
+.sg-none { padding: var(--space-3); font-size: 14px; line-height: 20px; color: var(--muted); }
+.suggest .sg-none a { display: inline; padding: 0; border: 0; color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }   /* ссылка внутри текста, не строка списка */
 .hdr-phone { display: flex; flex-direction: column; line-height: 18px; white-space: nowrap; }
 .hdr-phone__num { font-weight: 600; font-size: 17px; color: var(--ink); }
 .hdr-phone__num:hover { color: var(--blue); }
@@ -237,7 +238,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .sec__foot { margin-top: var(--space-5); }
 .sec-in { margin: var(--space-7) 0 0; }
 /* разделитель секций: линия 1 px и короткая подпись слева */
-.group-title { font-family: var(--font-h); font-size: 40px; line-height: 44px; margin: 0 0 var(--space-6); padding-top: var(--space-5); border-top: 2px solid var(--ink); }
+.group-title { font-family: var(--font-h); font-size: 48px; line-height: 52px; font-weight: 600; color: var(--navy); margin: 0 0 var(--space-6); padding-top: var(--space-5); border-top: 4px solid var(--navy); }
 .rule { display: flex; align-items: center; gap: var(--space-3); margin: 0 0 var(--space-6); font-size: 13px; line-height: 16px; color: var(--muted); }
 .rule::after { content: ''; flex: 1; height: 1px; background: var(--line); }
 .h2 { font-size: 24px; line-height: 30px; margin-bottom: var(--space-4); }
@@ -833,7 +834,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   h1, .hero__title { font-size: 40px; }
   .pp__title { font-size: 32px; line-height: 36px; }
   .sec__title { font-size: 28px; line-height: 34px; }
-  .group-title { font-size: 32px; line-height: 36px; }
+  .group-title { font-size: 36px; line-height: 40px; }
   .sec--air { padding: var(--space-8) 0; }
   .hero { padding-bottom: var(--space-7); }
   .hero__lead { font-size: 16px; line-height: 24px; margin-bottom: var(--space-5); }
@@ -906,3 +907,4 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .js .rv, .js img.ld, .js .fx .fx-l { opacity: 1 !important; transform: none !important; }
   .js .fmt__tile rect { stroke-dashoffset: 0 !important; }
 }
+.ps-subnav--top + .cat-intro { border-top: 0; }   /* под вкладками — без второй линии */
