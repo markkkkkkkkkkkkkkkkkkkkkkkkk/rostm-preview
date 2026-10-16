@@ -260,16 +260,22 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .hero__tel { font-size: 22px; font-weight: 600; color: var(--ink); }
 .hero__tel:hover { color: var(--blue); }
 .hero__rooms { font-size: 14px; line-height: 20px; color: var(--muted); padding-top: var(--space-4); border-top: 1px solid var(--line); max-width: 560px; }
-/* мозаика выходит за контейнер вправо до края экрана; шов 3 px виден сразу */
+/* мозаика: плиты из каталога лежат «на полу» в перспективе — видна толщина плиты, при наведении плита приподнимается */
 .hero__mosaic { --bleed: max(var(--gut), (100vw - var(--wrap)) / 2 + var(--gut));
-  margin-right: calc(-1 * var(--bleed)); display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(9, 1fr);
-  gap: 3px; aspect-ratio: 12 / 9; background: var(--seam); padding: 3px 0 3px 3px; }
-.mz { margin: 0; position: relative; overflow: hidden; background: var(--paper-2); animation: mzIn .45s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms); }
+  margin-right: calc(-1 * var(--bleed)); perspective: 1600px; perspective-origin: 40% 0; }
+.hero__floor { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(9, 1fr); gap: 10px; aspect-ratio: 12 / 9;
+  transform: rotateX(50deg) rotateZ(-30deg) scale(.74); transform-origin: 50% 50%; transform-style: preserve-3d; margin: -12% 0 -14% 4%; }
+.mz { --edge: #858e94; margin: 0; position: relative; background: var(--paper-2); animation: mzIn .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms);
+  box-shadow: 1px 1px 0 #c3cbd0, 2px 2px 0 #b4bdc2, 3px 3px 0 #a7b0b5, 4px 4px 0 #9ba4a9, 5px 5px 0 #919a9f, 6px 6px 0 var(--edge), 7px 7px 0 var(--edge);   /* торец плиты, без размытия */
+  transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
 .mz:first-child { animation: none; }   /* крупная плитка слева — элемент LCP: видна сразу, остальные проявляются за ней */
-.mz a { display: block; height: 100%; color: #fff; }
+.mz:hover, .mz:focus-within { transform: translate(-8px, -8px);
+  box-shadow: 1px 1px 0 #c3cbd0, 2px 2px 0 #b4bdc2, 3px 3px 0 #a7b0b5, 4px 4px 0 #9ba4a9, 5px 5px 0 #919a9f, 6px 6px 0 var(--edge), 7px 7px 0 var(--edge), 16px 16px 0 rgba(21, 25, 30, .1); }
+.mz a { display: block; height: 100%; color: #fff; overflow: hidden; position: relative; }
 .mz img { width: 100%; height: 100%; object-fit: cover; }
-.mz--rot { container-type: size; }
+.mz--rot a { container-type: size; }
 .mz--rot img.rot { position: absolute; left: 50%; top: 50%; width: 100cqh; height: 100cqw; max-width: none; transform: translate(-50%, -50%) rotate(90deg); }
+@media (prefers-reduced-motion: reduce) { .mz { transition: none; } .mz:hover, .mz:focus-within { transform: none; } }
 .mz figcaption { position: absolute; left: 0; bottom: 0; padding: var(--space-1) var(--space-2); font-size: 12px; line-height: 16px; background: var(--ink); opacity: 0; transition: opacity var(--t); }
 .mz figcaption b { font-weight: 600; margin-right: var(--space-1); }
 .mz:hover figcaption, .mz:focus-within figcaption { opacity: 1; }
@@ -392,7 +398,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 /* ---------- подвал: колонки начинаются на одной высоте, логотип — на уровне заголовков ---------- */
 .ftr { background: var(--ink); color: rgba(255, 255, 255, .75); font-size: 15px; }
 .ftr__in { display: grid; grid-template-columns: 1.3fr 1fr 1fr 1.3fr; gap: var(--space-7); align-items: start; padding-top: var(--space-8); padding-bottom: var(--space-7); }
-.ftr__brand img { width: 160px; margin-bottom: var(--space-4); }
+.ftr__brand > a { display: inline-block; margin-bottom: var(--space-4); padding: 10px 14px; background: var(--paper); border-radius: var(--r); }   /* цветной логотип на светлой плашке: на тёмном подвале синий иначе не виден */
+.ftr__brand img { display: block; width: 160px; height: auto; }
 .ftr__brand p { max-width: 300px; font-size: 14px; line-height: 20px; }
 .ftr__h { font-size: 13px; line-height: 16px; font-weight: 400; color: rgba(255, 255, 255, .6); margin: 0 0 var(--space-4); }
 .ftr__col a { display: block; padding: var(--space-1) 0; color: rgba(255, 255, 255, .85); }
@@ -759,7 +766,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .js .rv.is-in { opacity: 1; transform: none; transition: opacity .55s var(--ease), transform .55s var(--ease); transition-delay: calc(var(--i, 0) * 50ms); }
 .js img.ld { opacity: 0; transition: opacity .45s var(--ease); }
 .js img.ld.is-ld { opacity: 1; }
-@keyframes mzIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mzIn { from { opacity: 0; translate: 0 -14px; } to { opacity: 1; translate: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes drop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
@@ -801,7 +808,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .sec--air { padding: var(--space-8) 0; }
   .hero { padding: var(--space-5) 0 var(--space-8); }
   .hero__in, .facade, .showrooms, .about, .pp, .pp-more { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
-  .hero__mosaic { margin-right: calc(-1 * var(--gut)); aspect-ratio: 12 / 7; }
+  .hero__mosaic { margin-right: calc(-1 * var(--gut)); }
   .dirs { grid-template-columns: 1fr; gap: var(--space-7); }
   .dir { grid-row: auto; grid-template-rows: auto auto; }
   .gallery { grid-template-columns: 1fr 1fr; }
