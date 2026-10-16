@@ -91,7 +91,7 @@
   }
   function fadeImgs(root) {
     $$('img', root).forEach(function (im) {
-      if (im.closest('.hdr, .ftr, .hero__mosaic, .fmt__tile') || (im.complete && im.naturalWidth)) return;
+      if (im.closest('.hdr, .ftr, .hero__samples, .fmt__tile') || (im.complete && im.naturalWidth)) return;
       im.classList.add('ld');
       var on = function () { im.classList.add('is-ld'); };
       im.addEventListener('load', on, { once: true });

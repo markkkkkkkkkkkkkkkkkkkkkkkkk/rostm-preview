@@ -260,25 +260,31 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .hero__tel { font-size: 22px; font-weight: 600; color: var(--ink); }
 .hero__tel:hover { color: var(--blue); }
 .hero__rooms { font-size: 14px; line-height: 20px; color: var(--muted); padding-top: var(--space-4); border-top: 1px solid var(--line); max-width: 560px; }
-/* мозаика: плиты из каталога лежат «на полу» в перспективе — видна толщина плиты, при наведении плита приподнимается */
-.hero__mosaic { --bleed: max(var(--gut), (100vw - var(--wrap)) / 2 + var(--gut));
-  margin-right: calc(-1 * var(--bleed)); perspective: 1600px; perspective-origin: 40% 0; }
-.hero__floor { display: grid; grid-template-columns: repeat(12, 1fr); grid-template-rows: repeat(9, 1fr); gap: 10px; aspect-ratio: 12 / 9;
-  transform: rotateX(50deg) rotateZ(-30deg) scale(.74); transform-origin: 50% 50%; transform-style: preserve-3d; margin: -12% 0 -14% 4%; }
-.mz { --edge: #858e94; margin: 0; position: relative; background: var(--paper-2); animation: mzIn .6s var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms);
-  box-shadow: 1px 1px 0 #c3cbd0, 2px 2px 0 #b4bdc2, 3px 3px 0 #a7b0b5, 4px 4px 0 #9ba4a9, 5px 5px 0 #919a9f, 6px 6px 0 var(--edge), 7px 7px 0 var(--edge);   /* торец плиты, без размытия */
-  transition: transform .35s var(--ease), box-shadow .35s var(--ease); }
-.mz:first-child { animation: none; }   /* крупная плитка слева — элемент LCP: видна сразу, остальные проявляются за ней */
-.mz:hover, .mz:focus-within { transform: translate(-8px, -8px);
-  box-shadow: 1px 1px 0 #c3cbd0, 2px 2px 0 #b4bdc2, 3px 3px 0 #a7b0b5, 4px 4px 0 #9ba4a9, 5px 5px 0 #919a9f, 6px 6px 0 var(--edge), 7px 7px 0 var(--edge), 16px 16px 0 rgba(21, 25, 30, .1); }
-.mz a { display: block; height: 100%; color: #fff; overflow: hidden; position: relative; }
-.mz img { width: 100%; height: 100%; object-fit: cover; }
-.mz--rot a { container-type: size; }
-.mz--rot img.rot { position: absolute; left: 50%; top: 50%; width: 100cqh; height: 100cqw; max-width: none; transform: translate(-50%, -50%) rotate(90deg); }
-@media (prefers-reduced-motion: reduce) { .mz { transition: none; } .mz:hover, .mz:focus-within { transform: none; } }
-.mz figcaption { position: absolute; left: 0; bottom: 0; padding: var(--space-1) var(--space-2); font-size: 12px; line-height: 16px; background: var(--ink); opacity: 0; transition: opacity var(--t); }
-.mz figcaption b { font-weight: 600; margin-right: var(--space-1); }
-.mz:hover figcaption, .mz:focus-within figcaption { opacity: 1; }
+/* образцы фактур: четыре плиты с небольшим перекрытием, как разложенные на столе образцы.
+   Порядок наложения слева направо; наведение или фокус выводит образец вперёд, остальные чуть отступают. */
+.hero__samples { position: relative; list-style: none; margin: 0; padding: 0; aspect-ratio: 6 / 5; }
+.smp { position: absolute; z-index: var(--z); transition: transform .32s var(--ease), opacity .32s var(--ease); animation: smpIn .5s var(--ease) both; animation-delay: calc(var(--z) * 60ms); }
+.smp--0 { --z: 1; left: 0; top: 9%; width: 41%; height: 82%; animation: none; }   /* крупный образец — элемент LCP: виден сразу */
+.smp--1 { --z: 2; left: 30%; top: 0; width: 32%; height: 60%; }
+.smp--2 { --z: 3; left: 50%; top: 34%; width: 29%; height: 58%; }
+.smp--3 { --z: 4; left: 71%; top: 5%; width: 29%; height: 74%; }
+.smp__a { display: block; position: relative; width: 100%; height: 100%; color: var(--ink); }
+.smp__pic { position: absolute; inset: 0; overflow: hidden; background: var(--paper-2);
+  box-shadow: 0 0 0 1px rgba(21, 25, 30, .1), 0 12px 24px -16px rgba(21, 25, 30, .45); }   /* край плиты и короткая тень от перекрытия */
+.smp__pic img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.smp__tag { position: absolute; left: var(--space-3); bottom: var(--space-3); display: inline-flex; align-items: center; gap: var(--space-2);
+  padding: 6px 10px; background: rgba(255, 255, 255, .94); border-radius: 2px; font-size: 13px; line-height: 16px; font-weight: 600;
+  transition: background-color .32s var(--ease), color .32s var(--ease); }
+.smp__tag .i { width: 12px; height: 12px; }
+.smp__more { max-width: 0; overflow: hidden; white-space: nowrap; opacity: 0; font-weight: 400; transition: max-width .35s var(--ease), opacity .25s var(--ease); }
+.smp__a:focus { outline: 0; }
+.smp__a:focus-visible .smp__pic { outline: 2px solid var(--ink); outline-offset: 3px; }
+.smp:hover, .smp:focus-within { z-index: 10; transform: translateY(-6px); }
+.hero__samples:has(.smp:hover, .smp:focus-within) .smp:not(:hover):not(:focus-within) { opacity: .72; }
+.smp:hover .smp__tag, .smp:focus-within .smp__tag { background: var(--ink); color: #fff; }
+.smp:hover .smp__more, .smp:focus-within .smp__more { max-width: 110px; opacity: .75; }
+@keyframes smpIn { from { opacity: 0; } to { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .smp, .smp__tag, .smp__more { transition: none; animation: none; } .smp:hover, .smp:focus-within { transform: none; } }
 
 /* направления: без рамок и плашек, разделены воздухом и линией сверху */
 .dirs { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; gap: 0 var(--space-7); }
@@ -577,7 +583,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .card { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
 .card__pic { position: relative; display: block; aspect-ratio: 1 / 1; background: var(--paper); overflow: hidden; margin-bottom: var(--space-2); }
 .card__pic img, .card__pic svg { width: 100%; height: 100%; object-fit: cover; display: block; }
-.card__pic img, .design__pic img, .dir__pic--tiles img, .mz img, .showrooms__pics img { outline: 1px solid rgba(21, 25, 30, .08); outline-offset: -1px; }   /* светлая плитка не сливается с бетоном */
+.card__pic img, .design__pic img, .dir__pic--tiles img, .showrooms__pics img { outline: 1px solid rgba(21, 25, 30, .08); outline-offset: -1px; }   /* светлая плитка не сливается с бетоном */
 .card__pic .iso { padding: 12%; }
 .card__flag { position: absolute; left: var(--space-2); top: var(--space-2); padding: var(--space-1) var(--space-2); background: var(--ink); font-size: 12px; font-weight: 600; line-height: 16px; color: #fff; }
 .card__flag--new { background: var(--navy); }
@@ -788,7 +794,6 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .js .rv.is-in { opacity: 1; transform: none; transition: opacity .55s var(--ease), transform .55s var(--ease); transition-delay: calc(var(--i, 0) * 50ms); }
 .js img.ld { opacity: 0; transition: opacity .45s var(--ease); }
 .js img.ld.is-ld { opacity: 1; }
-@keyframes mzIn { from { opacity: 0; translate: 0 -14px; } to { opacity: 1; translate: none; } }
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @keyframes drop { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
@@ -830,7 +835,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .sec--air { padding: var(--space-8) 0; }
   .hero { padding: var(--space-5) 0 var(--space-8); }
   .hero__in, .facade, .showrooms, .about, .pp, .pp-more { grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
-  .hero__mosaic { margin-right: calc(-1 * var(--gut)); }
+  .hero__samples { aspect-ratio: 16 / 10; }
   .dirs { grid-template-columns: 1fr; gap: var(--space-7); }
   .dir { grid-row: auto; grid-template-rows: auto auto; }
   .gallery { grid-template-columns: 1fr 1fr; }
@@ -883,7 +888,14 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .hero__lead { font-size: 16px; line-height: 24px; margin-bottom: var(--space-5); }
   .hero__actions { margin-bottom: var(--space-5); flex-direction: column; align-items: flex-start; }
   .hero__tel { font-size: 20px; }
-  .hero__mosaic { display: none; }   /* на телефоне мозаика оказывалась под текстом — не показываем */
+  /* телефон: четыре образца в ряд, подписи всегда видны — касание сразу ведёт в раздел */
+  .hero__samples { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: var(--space-2); max-width: none; aspect-ratio: auto; }
+  .smp { position: static; width: auto; height: auto; animation: none; }
+  .smp:hover, .smp:focus-within { transform: none; }
+  .hero__samples:has(.smp:hover, .smp:focus-within) .smp:not(:hover):not(:focus-within) { opacity: 1; }
+  .smp__pic { position: relative; display: block; aspect-ratio: 3 / 4; box-shadow: 0 0 0 1px rgba(21, 25, 30, .1); }
+  .smp__tag, .smp:hover .smp__tag, .smp:focus-within .smp__tag { position: static; display: flex; justify-content: flex-start; gap: var(--space-1); padding: var(--space-2) 0 0; background: none; color: var(--ink); }
+  .smp__more { display: none; }
   .toolbar__count { order: 6; flex-basis: 100%; }
   .fam__i figcaption { display: none; }
   .ps-group__head { grid-template-columns: 1fr; gap: var(--space-3); padding: var(--space-4) 0; }
