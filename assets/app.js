@@ -910,77 +910,125 @@
     });
     if (zoom) zoom.addEventListener('click', function (e) {
       e.preventDefault();
-      var byKey = e.detail === 0;                        // открыто с клавиатуры — тогда и фокус показываем
-      var box = document.createElement('div');
-      box.className = 'zoom';
-      box.setAttribute('role', 'dialog');
-      box.setAttribute('aria-modal', 'true');
-      box.setAttribute('aria-label', 'Фото крупно');
-      // самый крупный из файлов, что есть на сайте (в srcset только существующие)
-      var im = $('img', zoom), best = zoom.getAttribute('href'), bw = 0;
-      (im && im.getAttribute('srcset') || '').split(',').forEach(function (part) {
-        var m = part.trim().split(/\s+/), w = parseInt(m[1], 10) || 0;
-        if (m[0] && w > bw) { bw = w; best = m[0]; }
+      openViewer([zoom], 0, zoom, e.detail === 0);
+    });
+  }
+
+  /* ---------- просмотр фото крупно: товар и галереи шоурумов ----------
+     links — ссылки с <img> внутри; берём самый крупный файл из srcset (в нём только существующие файлы). */
+  function bestSrc(a) {
+    var im = $('img', a), best = a.getAttribute('href'), bw = 0;
+    (im && im.getAttribute('srcset') || '').split(',').forEach(function (part) {
+      var m = part.trim().split(/\s+/), w = parseInt(m[1], 10) || 0;
+      if (m[0] && w > bw) { bw = w; best = m[0]; }
+    });
+    return best;
+  }
+  function openViewer(links, idx, opener, byKey) {
+    var many = links.length > 1;
+    var box = document.createElement('div');
+    box.className = 'zoom';
+    box.setAttribute('role', 'dialog');
+    box.setAttribute('aria-modal', 'true');
+    box.setAttribute('aria-label', 'Фото крупно');
+    box.innerHTML = '<img src="" alt=""><button class="zoom__x" type="button" aria-label="Закрыть">×</button>' + (many ?
+      '<button class="zoom__nav zoom__nav--prev" type="button" aria-label="Предыдущее фото"><svg class="i" viewBox="0 0 16 16" aria-hidden="true"><path d="M10 3 5 8l5 5"/></svg></button>' +
+      '<button class="zoom__nav zoom__nav--next" type="button" aria-label="Следующее фото"><svg class="i" viewBox="0 0 16 16" aria-hidden="true"><path d="m6 3 5 5-5 5"/></svg></button>' +
+      '<p class="zoom__count" aria-live="polite"></p>' : '');
+    var pic = $('img', box), btn = $('.zoom__x', box), count = $('.zoom__count', box), detail = false, kDet = 1;
+    var hint = document.createElement('p');
+    hint.className = 'zoom__hint'; hint.hidden = true; hint.textContent = 'Нажмите на фото, чтобы приблизить';
+    box.appendChild(hint);
+    // одно правило для всех фото: вписать целиком в окно (поля 24 px по бокам, 64 px сверху и снизу под кнопку ×),
+    // независимо от разрешения файла; длинную плитку на широком экране кладём горизонтально
+    var fit = function () {
+      var nw = pic.naturalWidth, nh = pic.naturalHeight;
+      if (!nw || !nh) return;
+      var vw = document.documentElement.clientWidth, vh = window.innerHeight;
+      var rot = nh / nw > 2.2 && vw > vh;
+      var aw = vw - (vw < 640 ? 32 : many ? 144 : 48), ah = vh - 128, w = rot ? nh : nw, h = rot ? nw : nh, k = Math.min(aw / w, ah / h);
+      // приближение: до натурального размера файла, но не меньше ×2 и не больше ×3 от вписанного; повёрнутое не приближаем
+      kDet = rot ? k : Math.min(Math.max(1, 2 * k), 3 * k);
+      if (kDet < k * 1.25) detail = false;
+      box.classList.toggle('can-zoom', kDet >= k * 1.25);
+      hint.hidden = !(kDet >= k * 1.25) || detail;
+      box.classList.toggle('zoom--rot', rot);
+      box.classList.toggle('zoom--detail', detail);
+      var kk = detail ? kDet : k, pw = Math.round(nw * kk), ph = Math.round(nh * kk);
+      pic.style.width = pw + 'px';
+      pic.style.height = ph + 'px';
+      pic.style.margin = detail ? Math.max(0, Math.round((vh - ph) / 2)) + 'px ' + Math.max(0, Math.round((vw - pw) / 2)) + 'px' : '';
+    };
+    var show = function (i) {
+      idx = (i + links.length) % links.length;
+      detail = false;
+      var im = $('img', links[idx]);
+      pic.alt = im ? im.alt : '';
+      pic.src = bestSrc(links[idx]);
+      if (count) count.textContent = (idx + 1) + ' из ' + links.length;
+    };
+    pic.addEventListener('click', function (ev) {
+      if (!box.classList.contains('can-zoom')) return;
+      var r = pic.getBoundingClientRect(), rx = (ev.clientX - r.left) / r.width, ry = (ev.clientY - r.top) / r.height;
+      detail = !detail; fit();
+      if (detail) {                                    // точка под пальцем остаётся на месте
+        box.scrollLeft = rx * pic.offsetWidth + parseFloat(pic.style.marginLeft || 0) - ev.clientX;
+        box.scrollTop = ry * pic.offsetHeight + parseFloat(pic.style.marginTop || 0) - ev.clientY;
+      }
+    });
+    pic.addEventListener('load', fit);
+    window.addEventListener('resize', fit);
+    var html = document.documentElement, padR = html.style.paddingRight, ovf = html.style.overflow;
+    var sbw = window.innerWidth - html.clientWidth;    // фон не прокручивается и не сдвигается
+    html.style.overflow = 'hidden';
+    if (sbw > 0) html.style.paddingRight = sbw + 'px';
+    var close = function (viaKey) {
+      box.remove();
+      document.removeEventListener('keydown', key);
+      window.removeEventListener('resize', fit);
+      html.style.overflow = ovf; html.style.paddingRight = padR;
+      var back = many ? links[idx] : opener;            // фокус — на фото, которое смотрели последним
+      try { back.focus({ preventScroll: true, focusVisible: !!viaKey }); } catch (er) { back.focus(); }
+    };
+    var btns = $$('button', box);
+    var key = function (ev) {
+      if (ev.key === 'Escape') { ev.preventDefault(); close(true); }
+      else if (many && ev.key === 'ArrowLeft') { ev.preventDefault(); show(idx - 1); }
+      else if (many && ev.key === 'ArrowRight') { ev.preventDefault(); show(idx + 1); }
+      else if (ev.key === 'Tab') {                     // фокус не уходит из окна
+        ev.preventDefault();
+        var n = btns.indexOf(document.activeElement);
+        btns[(n + (ev.shiftKey ? -1 : 1) + btns.length) % btns.length].focus();
+      }
+    };
+    if (many) {
+      $('.zoom__nav--prev', box).addEventListener('click', function () { show(idx - 1); });
+      $('.zoom__nav--next', box).addEventListener('click', function () { show(idx + 1); });
+      var tx = null, ty = 0;                           // листание пальцем
+      box.addEventListener('touchstart', function (ev) { if (!detail && ev.touches.length === 1) { tx = ev.touches[0].clientX; ty = ev.touches[0].clientY; } }, { passive: true });
+      box.addEventListener('touchend', function (ev) {
+        if (tx === null) return;
+        var dx = ev.changedTouches[0].clientX - tx, dy = ev.changedTouches[0].clientY - ty;
+        tx = null;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(idx + (dx < 0 ? 1 : -1));
       });
-      box.innerHTML = '<img src="' + best + '" alt="' + (im ? im.alt.replace(/"/g, '&quot;') : '') + '"><button class="zoom__x" type="button" aria-label="Закрыть">×</button>';
-      var pic = $('img', box), btn = $('button', box), detail = false, kFit = 1, kDet = 1;
-      // одно правило для всех фото: вписать целиком в окно (поля 24 px по бокам, 64 px сверху и снизу под кнопку ×),
-      // независимо от разрешения файла; длинную плитку на широком экране кладём горизонтально
-      var fit = function () {
-        var nw = pic.naturalWidth, nh = pic.naturalHeight;
-        if (!nw || !nh) return;
-        var vw = document.documentElement.clientWidth, vh = window.innerHeight;
-        var rot = nh / nw > 2.2 && vw > vh;
-        var aw = vw - (vw < 640 ? 32 : 48), ah = vh - 128, w = rot ? nh : nw, h = rot ? nw : nh, k = Math.min(aw / w, ah / h);
-        // приближение: до натурального размера файла, но не меньше ×2 и не больше ×3 от вписанного; повёрнутое не приближаем
-        kFit = k; kDet = rot ? k : Math.min(Math.max(1, 2 * k), 3 * k);
-        if (kDet < k * 1.25) detail = false;
-        box.classList.toggle('can-zoom', kDet >= k * 1.25);
-        if (hint) hint.hidden = !(kDet >= k * 1.25) || detail;
-        box.classList.toggle('zoom--rot', rot);
-        box.classList.toggle('zoom--detail', detail);
-        var kk = detail ? kDet : k, pw = Math.round(nw * kk), ph = Math.round(nh * kk);
-        pic.style.width = pw + 'px';
-        pic.style.height = ph + 'px';
-        pic.style.margin = detail ? Math.max(0, Math.round((vh - ph) / 2)) + 'px ' + Math.max(0, Math.round((vw - pw) / 2)) + 'px' : '';
-      };
-      var hint = document.createElement('p');
-      hint.className = 'zoom__hint'; hint.hidden = true; hint.textContent = 'Нажмите на фото, чтобы приблизить';
-      box.appendChild(hint);
-      pic.addEventListener('click', function (ev) {
-        if (!box.classList.contains('can-zoom')) return;
-        var r = pic.getBoundingClientRect(), rx = (ev.clientX - r.left) / r.width, ry = (ev.clientY - r.top) / r.height;
-        detail = !detail; fit();
-        if (detail) {                                    // точка под пальцем остаётся на месте
-          box.scrollLeft = rx * pic.offsetWidth + parseFloat(pic.style.marginLeft || 0) - ev.clientX;
-          box.scrollTop = ry * pic.offsetHeight + parseFloat(pic.style.marginTop || 0) - ev.clientY;
-        }
+    }
+    box.addEventListener('click', function (ev) {
+      if (ev.target === pic || ev.target === hint || ev.target.closest('button') || ev.target === count) return;
+      if (detail && ev.target === box) { detail = false; fit(); return; }   // мимо приближенного фото — обратно к целому
+      close(ev.detail === 0);
+    });
+    document.addEventListener('keydown', key);
+    show(idx);
+    document.body.appendChild(box);
+    try { btn.focus({ focusVisible: byKey }); } catch (er) { btn.focus(); }
+  }
+  function initGalleries() {
+    $$('[data-gallery]').forEach(function (g) {
+      var links = $$('a[data-gal]', g);
+      links.forEach(function (a, i) {
+        a.addEventListener('click', function (e) { e.preventDefault(); openViewer(links, i, a, e.detail === 0); });
       });
-      pic.addEventListener('load', fit);
-      window.addEventListener('resize', fit);
-      var html = document.documentElement, padR = html.style.paddingRight, ovf = html.style.overflow;
-      var sbw = window.innerWidth - html.clientWidth;    // фон не прокручивается и не сдвигается
-      html.style.overflow = 'hidden';
-      if (sbw > 0) html.style.paddingRight = sbw + 'px';
-      var close = function (viaKey) {
-        box.remove();
-        document.removeEventListener('keydown', key);
-        window.removeEventListener('resize', fit);
-        html.style.overflow = ovf; html.style.paddingRight = padR;
-        try { zoom.focus({ preventScroll: true, focusVisible: !!viaKey }); } catch (er) { zoom.focus(); }
-      };
-      var key = function (ev) {
-        if (ev.key === 'Escape') { ev.preventDefault(); close(true); }
-        else if (ev.key === 'Tab') { ev.preventDefault(); btn.focus(); }   // в окне одна кнопка
-      };
-      box.addEventListener('click', function (ev) {
-        if (ev.target === pic || ev.target === hint) return;
-        if (detail && ev.target === box) { detail = false; fit(); return; }   // мимо приближенного фото — обратно к целому
-        close(ev.detail === 0);
-      });
-      document.addEventListener('keydown', key);
-      document.body.appendChild(box);
-      try { btn.focus({ focusVisible: byKey }); } catch (er) { btn.focus(); }
     });
   }
 
@@ -1219,6 +1267,7 @@
     initSuggest();
     initCallback();
     initMisc();
+    initGalleries();
     var cat = $('[data-catalog]');
     if (cat) {
       if (cat.dataset.catalog === 'kg') initCatalog(cat);
