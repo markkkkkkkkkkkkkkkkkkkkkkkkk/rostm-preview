@@ -1023,6 +1023,35 @@
     document.body.appendChild(box);
     try { btn.focus({ focusVisible: byKey }); } catch (er) { btn.focus(); }
   }
+  /* слайдер фото: лента прокручивается сама (палец, тачпад), кнопки и ←/→ листают на один кадр */
+  function initSliders() {
+    var smooth = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    $$('[data-slider]').forEach(function (sl) {
+      var track = $('.slider__track', sl), slides = $$('.slider__slide', sl), bar = $('.slider__progress', sl);
+      var prev = $('[data-slider-prev]', sl), next = $('[data-slider-next]', sl), cnt = $('[data-slider-count]', sl);
+      if (!bar) return;
+      var step = function () { return slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth; };
+      var go = function (d) { track.scrollBy({ left: d * step(), behavior: smooth ? 'smooth' : 'auto' }); };
+      var upd = function () {
+        var max = track.scrollWidth - track.clientWidth, x = track.scrollLeft;
+        sl.style.setProperty('--vis', Math.min(1, track.clientWidth / track.scrollWidth).toFixed(4));
+        sl.style.setProperty('--p', max > 0 ? Math.min(1, x / max).toFixed(4) : 0);
+        prev.disabled = x <= 2;
+        next.disabled = x >= max - 2;
+        var first = Math.round(x / step()), shown = Math.max(1, Math.round(track.clientWidth / step()));
+        if (cnt) cnt.textContent = 'Фото ' + (first + 1) + (shown > 1 ? '–' + Math.min(slides.length, first + shown) : '') + ' из ' + slides.length;
+      };
+      prev.addEventListener('click', function () { go(-1); });
+      next.addEventListener('click', function () { go(1); });
+      track.addEventListener('keydown', function (e) {
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') { e.preventDefault(); go(e.key === 'ArrowLeft' ? -1 : 1); }
+      });
+      var raf = 0;
+      track.addEventListener('scroll', function () { if (!raf) raf = requestAnimationFrame(function () { raf = 0; upd(); }); }, { passive: true });
+      window.addEventListener('resize', upd);
+      upd();
+    });
+  }
   function initGalleries() {
     $$('[data-gallery]').forEach(function (g) {
       var links = $$('a[data-gal]', g);
@@ -1268,6 +1297,7 @@
     initCallback();
     initMisc();
     initGalleries();
+    initSliders();
     var cat = $('[data-catalog]');
     if (cat) {
       if (cat.dataset.catalog === 'kg') initCatalog(cat);
