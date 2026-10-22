@@ -645,6 +645,7 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
 .ps-tbl .c-pack { width: 11%; }
 .ps-tbl .c-st { width: 15%; }
 .ps-tbl .c-act { width: 140px; }
+.ps-tbl:not(:has(.c-act)) .c-st { width: 22%; }   /* заявки выключены: нет колонки «Узнать цену» — наличию нужно больше места */
 .ps-tbl th { text-align: left; font-size: 13px; font-weight: 400; color: var(--muted); height: 40px; padding: 0 var(--space-5) 0 0; border-bottom: 1px solid var(--line); vertical-align: middle; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ps-tbl td { height: 56px; padding: 0 var(--space-5) 0 0; border-bottom: 1px solid var(--line-2); vertical-align: middle; color: var(--ink); }
 .ps-tbl .num { text-align: right; font-variant-numeric: tabular-nums; }
@@ -867,6 +868,8 @@ mark.ask::before { content: '? '; font-weight: 600; color: #8a6200; }
   .mbar__call { border: 1px solid var(--navy); color: var(--navy); }
   .mbar__call .i { width: 20px; height: 20px; }
   .mbar__cb { border: 0; background: var(--navy); color: #fff; }
+  .mbar--call { grid-template-columns: 1fr; }   /* заявки выключены: одна кнопка «Позвонить» */
+  .mbar--call .mbar__call { border: 0; background: var(--navy); color: #fff; }
   body { padding-bottom: 56px; }   /* высота нижней панели звонка */
   .cards--list .card { grid-template-columns: 56px minmax(0, 1fr) auto; }
   .cards--list .card__pic { width: 56px; height: 56px; }

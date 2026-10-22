@@ -5,6 +5,8 @@
   'use strict';
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
+  // приём заявок выключен (режим каталога) — сборка ставит <html data-leads="off">; кнопки «Узнать цену» в карточках не рисуем
+  var LEADS = document.documentElement.getAttribute('data-leads') !== 'off';
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
   var PAGE = 24;
   // Офлайн-копия (открывается двойным щелчком, без сервера): адреса относительные, данные — из .js
@@ -214,12 +216,13 @@
       flag + '</a><div class="card__sku">' + (x.a ? 'Арт. ' + esc(x.a) : '&nbsp;') + '</div><a class="card__name" href="' + url + '">' +
       esc(x.tn || x.n) + '</a><div class="card__foot"><div class="card__row">' +
       '<span class="card__price">Цена по запросу</span><span class="st st--' + x.st + '">' + ST[x.st] + '</span></div>' +
-      '<button class="btn btn--line btn--wide" type="button" data-callback data-cb-id="' + esc(x.i) + '">Узнать цену</button></div></article>';
+      (LEADS ? '<button class="btn btn--line btn--wide" type="button" data-callback data-cb-id="' + esc(x.i) + '">Узнать цену</button>' : '') +
+      '</div></article>';
   }
   function psRow(x) {
     return '<article class="card card--ps"><div class="card__sku">' + esc(x.b) + '</div><a class="card__name" href="' + U('/p/' + x.i + '/') + '">' + esc(x.n) + '</a><div class="card__foot"><div class="card__row"><span class="card__price">Цена по запросу</span>' +
-      '<span class="st st--' + x.st + '">' + ST[x.st] + '</span></div><button class="btn btn--line btn--wide" type="button" ' +
-      'data-callback data-cb-id="' + esc(x.i) + '">Узнать цену</button></div></article>';
+      '<span class="st st--' + x.st + '">' + ST[x.st] + '</span></div>' + (LEADS ? '<button class="btn btn--line btn--wide" type="button" ' +
+      'data-callback data-cb-id="' + esc(x.i) + '">Узнать цену</button>' : '') + '</div></article>';
   }
 
   /* ---------- город ---------- */
